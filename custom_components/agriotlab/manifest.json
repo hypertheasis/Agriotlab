@@ -1,1 +1,11 @@
-
+{
+  "domain": "agriotlab",
+  "name": "AgriotLab",
+  "version": "0.1.0",
+  "documentation": "https://github.com/hypertheasis/Agriotlab",
+  "issue_tracker": "https://github.com/hypertheasis/Agriotlab/issues",
+  "requirements": [],
+  "dependencies": [],
+  "codeowners": ["@hypertheasis"],
+  "iot_class": "cloud_polling"
+}
