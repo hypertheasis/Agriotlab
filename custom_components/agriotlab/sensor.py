@@ -7,19 +7,20 @@ from homeassistant.core import HomeAssistant
 from .const import DOMAIN
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
-    data = hass.data[DOMAIN][entry.entry_id]
-    async_add_entities([AgriotStatusSensor(data)])
+async def async_setup_entry(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    async_add_entities,
+) -> None:
+    async_add_entities([AgriotDummySensor(entry)])
 
 
-class AgriotStatusSensor(SensorEntity):
-    _attr_name = "AgriotLab Status"
-    _attr_icon = "mdi:sprout"
-
-    def __init__(self, data: dict):
-        self._data = data
-        self._attr_unique_id = f"agriotlab_status_{data.get('location_name', 'default')}"
+class AgriotDummySensor(SensorEntity):
+    def __init__(self, entry: ConfigEntry):
+        self._attr_name = f"AgriotLab {entry.data['location_name']}"
+        self._attr_unique_id = f"agriotlab_{entry.entry_id}"
+        self._state = "ok"
 
     @property
     def native_value(self):
-        return "ready"
+        return self._state
