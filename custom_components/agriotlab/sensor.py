@@ -1,50 +1,25 @@
+from __future__ import annotations
+
 from homeassistant.components.sensor import SensorEntity
-from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
 
-DOMAIN = "agriotlab"
-
-
-async def async_setup_entry(
-    hass: HomeAssistant,
-    entry: ConfigEntry,
-    async_add_entities: AddEntitiesCallback,
-) -> None:
-    async_add_entities(
-        [
-            AgriotLabAirTemperatureSensor(hass),
-            AgriotLabWarmCropSowingSensor(hass),
-        ]
-    )
+from .const import DOMAIN
 
 
-class AgriotLabBaseSensor(SensorEntity):
-    """Base class for AgriotLab sensors."""
-
-    should_poll = True
-
-    def __init__(self, hass: HomeAssistant):
-        self.hass = hass
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities):
+    data = hass.data[DOMAIN][entry.entry_id]
+    async_add_entities([AgriotStatusSensor(data)])
 
 
-class AgriotLabAirTemperatureSensor(AgriotLabBaseSensor):
-    _attr_name = "AgriotLab Air Temperature"
-    _attr_unique_id = "agriotlab_air_temperature"
-    _attr_unit_of_measurement = "°C"
-    _attr_device_class = "temperature"
+class AgriotStatusSensor(SensorEntity):
+    _attr_name = "AgriotLab Status"
+    _attr_icon = "mdi:sprout"
+
+    def __init__(self, data: dict):
+        self._data = data
+        self._attr_unique_id = f"agriotlab_status_{data.get('location_name', 'default')}"
 
     @property
     def native_value(self):
-        state = self.hass.states.get("weather.athena_spiti")
-        if not state:
-            return None
-        return state.attributes.get("temperature")
-
-
-class AgriotLabWarmCropSowingSensor(AgriotLabBaseSensor):
-    _attr_name = "AgriotLab Warm Crop Sowing Status"
-    _attr_unique_id = "agriotlab_warm_crop_sowing"
-
-    @property
-    def
+        return "ready"
